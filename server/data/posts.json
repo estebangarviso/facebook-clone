@@ -1,0 +1,34 @@
+[
+  {
+    "postId": "50a20b9e-05c2-5534-9b81-90b845b2b39b",
+    "userId": "e7b3eaf0-9779-556e-acec-ea613d3d9f3c",
+    "title": "Post Title 1",
+    "content": "Cotent 1",
+    "createdAt": 1656585300000,
+    "updatedAt": null
+  },
+  {
+    "postId": "ddcec888-abd2-568c-9f7f-98c31daf1ec0",
+    "userId": "e7b3eaf0-9779-556e-acec-ea613d3d9f3c",
+    "title": "Post Title 2",
+    "content": "Content 2",
+    "createdAt": 1656586500000,
+    "updatedAt": null
+  },
+  {
+    "postId": "ac4bc86d-65c4-50f9-a01e-7febd640ba47",
+    "userId": "e7b3eaf0-9779-556e-acec-ea613d3d9f3c",
+    "title": "asdasd",
+    "content": "asdasd",
+    "createdAt": 1656587100000,
+    "updatedAt": null
+  },
+  {
+    "postId": "300124fa-4b5a-50a3-b34c-b54e04412d70",
+    "userId": "5302462b-d3c6-500e-8983-173bd5f52708",
+    "title": "Hi my name is Jane",
+    "content": "asdkjasdajsdasdasd",
+    "createdAt": 1656587700000,
+    "updatedAt": null
+  }
+]
