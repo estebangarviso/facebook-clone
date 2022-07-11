@@ -1,15 +1,12 @@
 import './utils/colors.js';
 import express from 'express';
 import bodyParser from 'body-parser';
+import fileUpload from 'express-fileupload';
 import cors from 'cors';
-// import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import PostRoute from './routes/post.routes.js';
 import UserRoute from './routes/user.routes.js';
-// import Formatter from './core/Formatter.js';
-// import User from './classes/User.js';
-// import Post from './classes/Post.js';
 
 dotenv.config();
 const app = express();
@@ -18,6 +15,7 @@ const app = express();
 app.use(cookieParser());
 app.use(cors({ credentials: true, origin: process.env.FRONTEND_ORIGIN || 'http://localhost:3000' }));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(fileUpload());
 app.use(express.json());
 
 // Routes

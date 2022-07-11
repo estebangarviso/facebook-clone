@@ -27,10 +27,8 @@ router.post('/user/login', (req, res) => {
       );
       return res.status(200).json({
         success: true,
-        data: {
-          token,
-          userId: user.userId
-        }
+        token,
+        userId: user.userId
       });
     } catch (error) {
       console.error(error);
@@ -45,7 +43,7 @@ router.post('/user/login', (req, res) => {
   });
 });
 
-router.post('user/refresh', (req, res) => {
+router.post('/user/refresh', (req, res) => {
   const token = req.cookies.token || req.headers.token;
   if (!token) {
     return res.status(401).json({
@@ -89,7 +87,7 @@ router.post('user/refresh', (req, res) => {
   }
 });
 
-router.post('user/register', (req, res) => {
+router.post('/user/register', (req, res) => {
   const body = req.body;
   console.log(body);
   try {
@@ -99,7 +97,7 @@ router.post('user/register', (req, res) => {
     let avatar = req.files.avatar;
 
     //Use the mv() method to place the file in upload directory (i.e. "uploads")
-    avatar.mv('./uploads/' + avatar.name);
+    avatar.mv('./uploads/avatars' + avatar.name);
 
     return res.status(200).json({
       message: `User ${body.email} created`
@@ -111,14 +109,14 @@ router.post('user/register', (req, res) => {
   }
 });
 
-router.post('user/logout', (req, res) => {
+router.post('/user/logout', (req, res) => {
   return res.status(200).json({
     message: 'logout'
   });
 });
 
 // !TODO
-router.post('user/upload', async (req, res) => {
+router.post('/user/upload', async (req, res) => {
   const token = req.cookies.token || req.headers.token;
   //Authorization: 'Bearer TOKEN'
   if (!token) {

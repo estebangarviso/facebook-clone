@@ -35,7 +35,7 @@ router.get('/post', (req, res) => {
         }
       };
     });
-    return res.status(200).json(postsWithUser);
+    return res.status(200).json({ success: true, posts: postsWithUser });
   } catch (error) {
     console.error(error);
     return res.status(401).json({ success: false, message: 'Error! Invalid token.' });
@@ -45,8 +45,9 @@ router.get('/post', (req, res) => {
 router.post('/post', (req, res) => {
   const body = req.body;
   const token = req.cookies.token || req.headers.token;
+  const files = req.files;
 
-  console.log({ body, token });
+  console.log({ body, token, files });
   //Authorization: 'Bearer TOKEN'
   if (!token) {
     return res.status(401).json({ success: false, message: 'Error! Token was not provided.' });
@@ -60,11 +61,14 @@ router.post('/post', (req, res) => {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     if (!decoded) {
       return res.status(403).json({
-        error: 'Error! Inavlid token'
+        error: 'Error! Invalid token'
       });
     }
     try {
       const post = new Post();
+      let picture = files?.picture;
+      //Use the mv() method to place the file in upload directory (i.e. "uploads")
+      if (picture) picture.mv('./uploads/posts' + picture.name);
       post.create(body);
       return res.status(200).json({
         message: `Post created by user with email ${decoded.email}`
