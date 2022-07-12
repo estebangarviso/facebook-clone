@@ -1,30 +1,42 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import Header from '../../components/Header';
-import { Paper, Box } from '@mui/material';
+import { Container, Box } from '@mui/material';
 import Footer from '../../components/Footer';
+import { StyledMain } from './StyledComponents';
 
 const Layout = ({ children }) => {
-  const headerRef = useRef(null);
-  const footerRef = useRef(null);
-  const mainRef = useRef(null);
-
-  useEffect(() => {
-    const headerHeight = headerRef.current?.clientHeight;
-    const footerHeight = footerRef.current?.clientHeight;
-    if (mainRef.current) {
-      mainRef.current.style.paddingTop = `${headerHeight}px`;
-      mainRef.current.style.paddingBottom = `${footerHeight}px`;
-    }
-  }, []);
-
   return (
     <>
-      <Header ref={headerRef} />
-      <Box component='main' sx={{ px: 3 }} ref={mainRef}>
+      <Header />
+      <Container component={StyledMain} id='main' disableGutters maxWidth={false}>
         {children}
-      </Box>
-      <Footer ref={footerRef} />
+      </Container>
+      <Footer />
     </>
+  );
+};
+
+Layout.LeftColumn = ({ children }) => {
+  return (
+    <Box id='left-column' component='aside'>
+      {children}
+    </Box>
+  );
+};
+
+Layout.RightColumn = ({ children }) => {
+  return (
+    <Box id='right-column' component='aside'>
+      {children}
+    </Box>
+  );
+};
+
+Layout.MainColumn = ({ children }) => {
+  return (
+    <Box id='main-column' component='section'>
+      {children}
+    </Box>
   );
 };
 

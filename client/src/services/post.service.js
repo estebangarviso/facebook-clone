@@ -6,35 +6,34 @@ const ENDPOINT = AppConfig.BACKEND_URL + '/post';
 const getAll = () => {
   return axios
     .get(ENDPOINT, {
-      credentials: 'include'
+      withCredentials: true
     })
-    .then(async (response) => {
-      console.log(response);
-      const json = await response.data;
+    .then(async (res) => {
+      const json = await res.data;
       if (json.success) {
-        return json.data;
+        return json;
       }
-      throw new Error(json.message);
     })
-    .catch((error) => {
-      console.error(error);
+    .catch((err) => {
+      console.error(err);
     });
 };
 
 const add = (data) => {
   return axios
     .post(ENDPOINT, data, {
-      credentials: 'include'
+      withCredentials: true
     })
-    .then(async (response) => {
-      const json = await response.data;
+    .then(async (res) => {
+      console.log({ res });
+      const json = await res.data;
       if (json.success) {
         return json.data;
       }
       throw new Error(json.message);
     })
-    .catch((error) => {
-      console.error(error);
+    .catch((err) => {
+      console.error(err);
     });
 };
 

@@ -10,7 +10,7 @@ dotenv.config();
 const router = express.Router();
 
 router.get('/post', (req, res) => {
-  const token = req.cookies.token || req.headers.token;
+  const token = req.cookies.token;
   //Authorization: 'Bearer TOKEN'
   if (!token) {
     return res.status(401).json({ success: false, message: 'Error! Token was not provided.' });
@@ -44,7 +44,7 @@ router.get('/post', (req, res) => {
 
 router.post('/post', (req, res) => {
   const body = req.body;
-  const token = req.cookies.token || req.headers.token;
+  const token = req.cookies.token;
   const files = req.files;
 
   console.log({ body, token, files });

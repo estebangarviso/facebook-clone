@@ -2,7 +2,7 @@ import { Input, Typography, FormLabel } from '@mui/material';
 import React, { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { useFormContext, Controller } from 'react-hook-form';
-import { BigAvatar, Button, UploadIcon, DeleteIcon, CenteredContent } from './styles';
+import { BigAvatar, Button, UploadIcon, DeleteIcon, CenteredContent } from './StyledComponents';
 
 const FormAvatarUpload = ({ name, label, ...otherProps }) => {
   const [image, setImage] = useState(null);

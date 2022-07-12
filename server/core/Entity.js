@@ -13,13 +13,41 @@ export default class Entity {
   }
 
   validateBeforeAdd() {
-    if (this.definition) {
-      Object.keys(this.definition).forEach((key) => {
-        if (this.definition[key].required && !this[key]) {
-          throw new Error(`${this.definition[key].name} is required`);
+    if (this.definition && this.definition.fields) {
+      Object.keys(this.definition.fields).forEach((key) => {
+        if (this.definition.fields[key].required && !this[key]) {
+          throw new Error(`${this.definition.fields[key].name} is required`);
         }
-        if (this.definition[key].regexp && !this[key].match(this.definition[key].regexp)) {
-          throw new Error(`${this.definition[key].name} is invalid`);
+        if (
+          this.definition.fields[key].regexp &&
+          !this[key].match(this.definition.fields[key].regexp) &&
+          this[key].match(this.definition.fields[key].type !== 'file')
+        ) {
+          throw new Error(`${this.definition.fields[key].name} is invalid`);
+        } else if (this.definition.fields[key].type === 'file') {
+          // !TODO: check file type with regexp
+        }
+      });
+    }
+    /** @var {} this.definition.relations */
+    if (this.definition && this.definition.relations) {
+      const relations = this.definition.relations;
+      Object.keys(relations).forEach((key) => {
+        const model = relations[key].model;
+        const readAll = model.readAll();
+        if (relations[key].type === 'one') {
+          if (!this[relations[key].foreignKey]) {
+            throw new Error(`${model.constructor.name} with ${relations[key].foreignKey} not found`);
+          }
+          if (
+            !readAll.find(
+              (item) => item[model.constructor.name.toLowerCase() + 'Id'] === this[relations[key].foreignKey]
+            )
+          ) {
+            throw new Error(
+              `${model.constructor.name} with ${relations[key].foreignKey} ${this[relations[key].foreignKey]} not found`
+            );
+          }
         }
       });
     }
@@ -56,11 +84,11 @@ export default class Entity {
     return data.find((item) => item[this.constructor.name.toLowerCase() + 'Id'] === id);
   }
 
-  patch(id, params) {
+  put(id, params) {
     const data = this.readAll();
     const index = data.findIndex((item) => item[this.constructor.name.toLowerCase() + 'Id'] === id);
     if (index === -1) {
-      throw new Error(`${this.constructor.name} with ${this.constructor.name.toLowerCase()}Id ${id} not found`);
+      throw new Error(`${this.constructor.name} with id ${id} not found`);
     }
     data[index] = {
       ...data[index],

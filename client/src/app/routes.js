@@ -3,12 +3,16 @@ export const AppRoutes = {
     path: '/',
     name: 'Home'
   },
-  POST: {
-    path: '/post',
-    name: 'Post'
-  },
   LOGIN: {
     path: '/login',
     name: 'Login'
+  },
+  REGISTER: {
+    path: '/register',
+    name: 'Register'
+  },
+  PROFILE: {
+    path: '/profile',
+    name: 'Profile'
   }
 };

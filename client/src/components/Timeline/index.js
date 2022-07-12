@@ -1,39 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Container, Typography, Card, CardHeader, CardContent, CardMedia, IconButton, Avatar } from '@mui/material';
+import { Box, Typography, Card, CardHeader, CardContent, CardMedia, IconButton, Avatar } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import TimelineSkeleton from './TimelineSkeleton';
-import { AppConfig } from '../../app/config';
-import { AppRoutes } from '../../app/routes';
 import PostService from '../../services/post.service';
+import { useContext } from 'react';
+import GlobalContext from '../../context';
 
 const Timeline = () => {
-  const navigate = useNavigate();
+  const { auth } = useContext(GlobalContext);
   const [posts, setPosts] = useState(null);
 
   useEffect(() => {
     PostService.getAll()
-      .then((response) => {
-        setPosts(response);
+      .then((res) => {
+        console.log({ res });
+        if (res.success) {
+          setPosts(res.posts);
+        }
       })
-      .catch((error) => {
-        console.error(error);
+      .catch((err) => {
+        console.error(err);
+        auth.logout();
       });
   }, []);
 
   return posts ? (
-    <Container
-      maxWidth='lg'
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: '1rem',
-        width: '100%'
-      }}>
+    <Box sx={{ py: 4 }}>
       {posts.map((post) => (
-        <Card key={post.postId} style={{ width: '80vw', marginBottom: '1rem' }}>
+        <Card key={post.postId} style={{ marginBottom: '1rem' }}>
           <CardHeader
             avatar={<Avatar aria-label='recipe' src={post.user.avatar} />}
             action={
@@ -54,9 +48,11 @@ const Timeline = () => {
           </CardContent>
         </Card>
       ))}
-    </Container>
+    </Box>
   ) : (
-    <TimelineSkeleton />
+    <Box sx={{ py: 4 }}>
+      <TimelineSkeleton />
+    </Box>
   );
 };
 

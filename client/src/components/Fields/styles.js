@@ -1,3 +1,4 @@
+// deprecated: use mui instead of material-ui
 import styled from 'styled-components';
 import { common, shrink } from './functions';
 // Make floating label style when input is focused

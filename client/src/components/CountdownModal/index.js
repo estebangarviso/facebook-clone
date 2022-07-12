@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import styles from './styles';
 import { Modal, Box, Typography, Button } from '@mui/material';
 import { Alarm as AlarmIcon } from '@mui/icons-material';
+import { ModalBox } from './StyledComponents';
 
 const CountdownModal = ({
   open,
@@ -50,15 +50,15 @@ const CountdownModal = ({
 
   return (
     <Modal open={open} onClose={onClose} {...otherProps}>
-      <Box sx={styles.modal}>
-        <Box style={styles.centerContent}>
+      <ModalBox>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Typography variant='h6' component='h2'>
             {title}
           </Typography>
         </Box>
-        <Box style={styles.centerContent}>
-          <AlarmIcon style={styles.bigIcon} />
-          <Typography variant='h6' component='h3' style={styles.timeLeft}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <AlarmIcon className='icon' />
+          <Typography variant='h6' component='h3' className='timer'>
             {timeLeftFormatted()}
           </Typography>
         </Box>
@@ -67,12 +67,12 @@ const CountdownModal = ({
             {description}
           </Typography>
         </Box>
-        <Box style={styles.centerContent} sx={{ mt: 2 }}>
+        <Box className='center-content' sx={{ mt: 2 }}>
           <Button variant='contained' color='primary' onClick={onRefresh} disabled={timeLeftInSeconds <= 0} fullWidth>
             {labelRefresh}
           </Button>
         </Box>
-      </Box>
+      </ModalBox>
     </Modal>
   );
 };

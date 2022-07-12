@@ -10,30 +10,32 @@ export default class User extends Entity {
   password;
 
   definition = {
-    avatar: {
-      name: 'Avatar',
-      type: 'file',
-      required: false,
-      regexp: /^.*\.(jpg|jpeg|png|gif)$/i
-    },
-    name: {
-      name: 'Name',
-      type: 'name',
-      required: true,
-      regexp: /^[a-zA-Z ]+$/
-    },
-    email: {
-      name: 'Email',
-      type: 'email',
-      required: true,
-      regexp:
-        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
-    },
-    password: {
-      name: 'Password',
-      type: 'password',
-      required: true,
-      regexp: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+    fields: {
+      avatar: {
+        name: 'Avatar',
+        type: 'file',
+        required: false,
+        regexp: /^.*\.(jpg|jpeg|png|gif)$/i
+      },
+      name: {
+        name: 'Name',
+        type: 'name',
+        required: true,
+        regexp: /^[a-zA-Z ]+$/
+      },
+      email: {
+        name: 'Email',
+        type: 'email',
+        required: true,
+        regexp:
+          /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+      },
+      password: {
+        name: 'Password',
+        type: 'password',
+        required: true,
+        regexp: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+      }
     }
   };
 
@@ -49,7 +51,5 @@ export default class User extends Entity {
     this.post();
   }
 
-  validateBeforeAdd() {
-
-  }
+  validateBeforeAdd() {}
 }

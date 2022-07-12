@@ -12,7 +12,7 @@ const schema = yup
     name: yup
       .string()
       .required('Name is required')
-      .matches(/^[a-zA-Z]{2,}$/, 'Name must contain at least 2 characters')
+      .matches(/^[a-zA-Z ]{2,}$/, 'Name must contain at least 2 characters')
       .matches(/^[a-zA-Z ]+$/, 'Name must contain only letters and spaces'),
     email: yup.string().required('Email is required').email('Invalid email'),
     password: yup

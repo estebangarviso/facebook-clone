@@ -5,23 +5,17 @@ import { useForm, FormProvider } from 'react-hook-form';
 const Form = ({ children, useFormProps, enterSubmit, onSuccess, serviceCallback, ...otherProps }) => {
   const formRef = useRef();
   const methods = useForm(useFormProps);
-  const onSubmit = (data) => console.log(data);
-  // const onSubmit = (e) => {
-  //   e.preventDefault();
-  //   let form = e.target;
-  //   // Check if not a HTMLFormElement
-  //   if (!(form instanceof HTMLFormElement)) form = e.target.form;
-  //   if (!(form instanceof HTMLFormElement)) throw new Error('Form element not found');
-
-  //   // https://developer.mozilla.org/en-US/docs/Web/API/FormData
-  //   const data = new URLSearchParams();
-
-  //   for (const [key, value] of new FormData(form).entries()) {
-  //     data.append(key, value);
-  //   }
-
-  //   serviceCallback(data);
-  // };
+  const onSubmit = async (data) => {
+    try {
+      const res = await serviceCallback(data);
+      if (onSuccess) {
+        console.log({ res });
+        onSuccess(res);
+      }
+    } catch (err) {
+      throw error;
+    }
+  };
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && enterSubmit) {

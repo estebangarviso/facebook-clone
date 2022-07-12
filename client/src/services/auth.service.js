@@ -3,70 +3,71 @@ import axios from 'axios';
 
 const ENDPOINT = AppConfig.BACKEND_URL + '/user';
 
-const login = (email, password) => {
+const login = (data) => {
   return axios
-    .post(ENDPOINT + '/login', {
-      email,
-      password
-    })
-    .then(async (response) => {
-      const json = await response.data;
+    .post(ENDPOINT + '/login', { ...data })
+    .then(async (res) => {
+      const json = await res.data;
       if (json.success) {
-        return json.data;
+        return json;
+      } else {
+        throw new Error(json.message);
       }
-      throw new Error(json.message);
     })
-    .catch((error) => {
-      console.error(error);
+    .catch((err) => {
+      console.error(err);
     });
 };
 
 const register = (data) => {
   return axios
     .post(ENDPOINT + '/register', data)
-    .then(async (response) => {
-      const json = await response.data;
+    .then(async (res) => {
+      const json = await res.data;
       if (json.success) {
         return json.data;
+      } else {
+        throw new Error(json.message);
       }
-      throw new Error(json.message);
     })
-    .catch((error) => {
-      console.error(error);
+    .catch((err) => {
+      console.error(err);
     });
 };
 
 const logout = () => {
   return axios
     .post(ENDPOINT + '/logout', {
-      credentials: 'include'
+      withCredentials: true
     })
-    .then(async (response) => {
-      const json = await response.data;
+    .then(async (res) => {
+      const json = await res.data;
       if (json.success) {
         return json.data;
+      } else {
+        throw new Error(json.message);
       }
-      throw new Error(json.message);
     })
-    .catch((error) => {
-      console.error(error);
+    .catch((err) => {
+      console.error(err);
     });
 };
 
 const refresh = () => {
   return axios
     .post(ENDPOINT + '/refresh', {
-      credentials: 'include'
+      withCredentials: true
     })
-    .then(async (response) => {
-      const json = await response.data;
+    .then(async (res) => {
+      const json = await res.data;
       if (json.success) {
         return json.data;
+      } else {
+        throw new Error(json.message);
       }
-      throw new Error(json.message);
     })
-    .catch((error) => {
-      console.error(error);
+    .catch((err) => {
+      console.error(err);
     });
 };
 
