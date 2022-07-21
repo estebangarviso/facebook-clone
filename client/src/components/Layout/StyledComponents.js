@@ -4,6 +4,7 @@ export const StyledMain = styled('main')`
   display: flex !important;
   flex-direction: row;
   flex-wrap: nowrap;
+  min-height: 640px;
 
   > #left-column {
     max-width: 360px;

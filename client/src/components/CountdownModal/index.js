@@ -36,6 +36,7 @@ const CountdownModal = ({
 
   useEffect(() => {
     setTimeLeftInSeconds(timeLeftSeconds);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // format time left in 00:00:00 format

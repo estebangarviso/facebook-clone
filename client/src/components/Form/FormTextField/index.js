@@ -7,7 +7,7 @@ const FormTextField = ({ name, ...otherProps }) => {
   return (
     <Controller
       render={({ field, fieldState: { error } }) => (
-        <TextField helperText={error ? error.message : undefined} error={!!error} {...field} {...otherProps} />
+        <TextField helperText={error ? error.message : ''} error={!!error} {...field} {...otherProps} />
       )}
       name={name}
       control={control}

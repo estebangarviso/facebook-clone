@@ -9,46 +9,42 @@ export default class User extends Entity {
   email;
   password;
 
-  definition = {
-    fields: {
-      avatar: {
-        name: 'Avatar',
-        type: 'file',
-        required: false,
-        regexp: /^.*\.(jpg|jpeg|png|gif)$/i
-      },
-      name: {
-        name: 'Name',
-        type: 'name',
-        required: true,
-        regexp: /^[a-zA-Z ]+$/
-      },
-      email: {
-        name: 'Email',
-        type: 'email',
-        required: true,
-        regexp:
-          /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
-      },
-      password: {
-        name: 'Password',
-        type: 'password',
-        required: true,
-        regexp: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+  get definition() {
+    return {
+      fields: {
+        avatar: {
+          name: 'Avatar',
+          type: 'file',
+          uploadFolder: 'avatars',
+          required: false,
+          // can be: image/*, image/heic, image/heif
+          regexp: /^image\/(jpeg|png|jpg|gif|bmp|heic|heif)$/
+        },
+        name: {
+          name: 'Name',
+          type: 'name',
+          required: true,
+          regexp: /^[a-zA-Z ]+$/
+        },
+        email: {
+          name: 'Email',
+          type: 'email',
+          required: true,
+          regexp:
+            /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+        },
+        password: {
+          name: 'Password',
+          type: 'password',
+          required: true,
+          regexp: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+        }
       }
-    }
-  };
+    };
+  }
 
   constructor(params) {
     super();
-  }
-
-  create(params) {
-    this.avatar = params.avatar;
-    this.name = params.name;
-    this.email = params.email;
-    this.password = params.password;
-    this.post();
   }
 
   validateBeforeAdd() {}

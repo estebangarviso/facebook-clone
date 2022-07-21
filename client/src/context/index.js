@@ -1,19 +1,22 @@
 import { createContext, useState, useRef, useMemo } from 'react';
-import { red, yellow, lightBlue, green, grey } from '@mui/material/colors';
+import { red, yellow, lightBlue, grey } from '@mui/material/colors';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
+import CssBaseline from '@mui/material/CssBaseline';
+import { Navigate } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
 import { AppConfig } from '../app/config';
 import CountdownModal from '../components/CountdownModal';
 import { AppRoutes } from '../app/routes';
-import AuthService from '../services/auth.service';
+import AuthService from '../services/AuthService';
 
 // Replicate facebook's color palette
 export const getDesignTokens = (mode) => ({
   palette: {
     mode,
     background: {
-      paper: mode === 'dark' ? '#242526' : '#F5F5F5'
+      paper: mode === 'dark' ? '#242526' : '#F5F5F5',
+      default: mode === 'dark' ? '#18191A' : '#F0F2F5',
+      comment: mode === 'dark' ? '#3A3B3C' : '#F0F2F5'
     },
     primary: {
       main: '#2374E1'
@@ -32,10 +35,6 @@ export const getDesignTokens = (mode) => ({
     },
     info: {
       main: lightBlue[500]
-    },
-    text: {
-      muted: '#96999e',
-      muted2: '#737373'
     }
   }
 });
@@ -54,7 +53,6 @@ export default GlobalContext;
 export const GlobalProvider = ({ children }) => {
   /** auth - end */
   const intervalRef = useRef();
-  const navigate = useNavigate();
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [userId, setUserId] = useState(localStorage.getItem('userId'));
   const [showModalTokenIsAboutToExpire, setShowModalTokenIsAboutToExpire] = useState(false);
@@ -66,16 +64,16 @@ export const GlobalProvider = ({ children }) => {
     setUserId(null);
     setShowModalTokenIsAboutToExpire(false);
     clearInterval(intervalRef.current);
-    // document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
     // call logout endpoint
     AuthService.logout()
       .then((res) => {
         console.log('logout res', res);
-        navigate(AppRoutes.LOGIN.path);
+        return <Navigate to={AppRoutes.LOGIN} />;
       })
       .catch((err) => {
-        console.error(err);
-        navigate(AppRoutes.LOGIN.path);
+        console.error('Ops! error on logout', err);
+        return <Navigate to={AppRoutes.LOGIN} />;
       });
   };
 
@@ -141,17 +139,13 @@ export const GlobalProvider = ({ children }) => {
   /** theme - start */
   // ref: https://mui.com/material-ui/customization/dark-mode/
   const [mode, setMode] = useState(localStorage.getItem('theme') || 'light');
-  const changeDocumentMainBackgroundColor = () =>
-    document.documentElement.style.setProperty('--web-wash', mode === 'light' ? '#F0F2F5' : '#18191A');
-  changeDocumentMainBackgroundColor();
   const colorMode = useMemo(
     () => ({
       // The dark mode switch would invoke this method
-      toggleColorMode: () => {
+      toggleColorMode: (save = true) => {
         setMode((prevMode) => {
           const newMode = prevMode === 'light' ? 'dark' : 'light';
-          localStorage.setItem('theme', newMode);
-          changeDocumentMainBackgroundColor();
+          if (save) localStorage.setItem('theme', newMode);
           return newMode;
         });
       }
@@ -164,6 +158,7 @@ export const GlobalProvider = ({ children }) => {
   return (
     <GlobalContext.Provider value={{ auth, colorMode }}>
       <ThemeProvider theme={theme}>
+        <CssBaseline />
         {children}
         {showModalTokenIsAboutToExpire ? (
           <CountdownModal

@@ -25,7 +25,7 @@ const PageNotFound = () => {
           }}>
           <Search inputBaseFullWidth={true} />
           <Typography variant='span' sx={{ textAlign: 'center' }}>
-            or <Link to={AppRoutes.HOME.path}>Go to home page</Link>
+            or <Link to={AppRoutes.HOME}>Go to home page</Link>
           </Typography>
         </Box>
       </Paper>

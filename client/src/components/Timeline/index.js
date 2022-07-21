@@ -1,52 +1,36 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Card, CardHeader, CardContent, CardMedia, IconButton, Avatar } from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Box } from '@mui/material';
 import TimelineSkeleton from './TimelineSkeleton';
-import PostService from '../../services/post.service';
+import PostService from '../../services/PostService';
 import { useContext } from 'react';
 import GlobalContext from '../../context';
+import Post from '../Post';
 
 const Timeline = () => {
   const { auth } = useContext(GlobalContext);
-  const [posts, setPosts] = useState(null);
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
     PostService.getAll()
       .then((res) => {
-        console.log({ res });
-        if (res.success) {
-          setPosts(res.posts);
+        if (res.status === 200) {
+          setPosts(res.data);
+        } else {
+          console.error(res);
+          auth.logout();
         }
       })
       .catch((err) => {
         console.error(err);
         auth.logout();
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return posts ? (
+  return posts.length ? (
     <Box sx={{ py: 4 }}>
       {posts.map((post) => (
-        <Card key={post.postId} style={{ marginBottom: '1rem' }}>
-          <CardHeader
-            avatar={<Avatar aria-label='recipe' src={post.user.avatar} />}
-            action={
-              <IconButton aria-label='settings'>
-                <MoreVertIcon />
-              </IconButton>
-            }
-            title={post.user.name}
-            subheader={post.createdAt}
-          />
-          {post.image && (
-            <CardMedia image={post.image} title={post.title} style={{ height: '200px' }} component='img' />
-          )}
-          <CardContent>
-            <Typography variant='body2' color='textSecondary' component='p'>
-              {post.content}
-            </Typography>
-          </CardContent>
-        </Card>
+        <Post {...post} />
       ))}
     </Box>
   ) : (

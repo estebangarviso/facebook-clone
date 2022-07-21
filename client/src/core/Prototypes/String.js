@@ -1,5 +1,5 @@
 // proper case string prototype (JScript 5.5+)
-// @ts-ignore
+/* eslint-disable */
 String.prototype.toProperCase = function () {
   return this.toLowerCase().replace(/^(.)|\s(.)/g, function ($1) {
     return $1.toUpperCase();

@@ -17,7 +17,7 @@ const FormPassword = ({ name, ...otherProps }) => {
           error={!!error}
           type={showPassword ? 'text' : 'password'}
           required
-          helperText={error ? error.message : undefined}
+          helperText={error ? error.message : ''}
           InputProps={{
             endAdornment: (
               <InputAdornment position='end'>

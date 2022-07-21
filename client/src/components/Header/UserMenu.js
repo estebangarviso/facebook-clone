@@ -26,7 +26,7 @@ const UserMenu = ({ anchorEl, menuId, isMenuOpen, handleMenuClose }) => {
         <Typography
           variant='span'
           component={Link}
-          to={AppRoutes.PROFILE.path}
+          to={AppRoutes.PROFILE}
           aria-label='profile of current user'
           aria-controls='primary-search-account-menu'
           aria-haspopup='true'

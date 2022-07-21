@@ -1,93 +1,59 @@
-import { Input, Typography, FormLabel } from '@mui/material';
+import { Badge, IconButton, FormHelperText } from '@mui/material';
 import React, { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { useFormContext, Controller } from 'react-hook-form';
-import { BigAvatar, Button, UploadIcon, DeleteIcon, CenteredContent } from './StyledComponents';
+import { BigAvatar, Button, UploadIcon, DeleteIcon } from './StyledComponents';
+import { Box } from '@mui/material';
 
 const FormAvatarUpload = ({ name, label, ...otherProps }) => {
-  const [image, setImage] = useState(null);
+  const [avatar, setAvatar] = useState('');
   const theme = useTheme();
-  const { control } = useFormContext();
+  const { control, setValue } = useFormContext();
 
   return (
     <Controller
-      render={({ field: { onChange, ref, ...otherFieldProps }, fieldState: { error } }) => {
-        const cleanup = () => {
-          URL.revokeObjectURL(image);
-          ref.current.value = null;
+      render={({ field, fieldState: { error } }) => {
+        const handleReset = () => {
+          setValue(name, '');
+          setAvatar('');
         };
 
-        const handleSetImage = (newImage) => {
-          if (image) {
-            cleanup();
-          }
-          setImage(newImage);
+        const handleChange = (e) => {
+          const file = e.target.files[0];
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const dataUrl = e.target.result; // blob://adadasdasd
+            setAvatar(dataUrl);
+          };
+          reader.readAsDataURL(file);
+
+          return field.onChange(e);
         };
 
-        const handleChange = (event) => {
-          const newImage = event.target?.files?.[0];
-
-          if (newImage) {
-            handleSetImage(URL.createObjectURL(newImage));
-          }
-        };
-
-        const handleClick = (event) => {
-          if (image) {
-            event.preventDefault();
-            handleSetImage(null);
-          }
-        };
         return (
-          <CenteredContent {...otherProps}>
-            <FormLabel>{label}</FormLabel>
-            <BigAvatar $withBorder alt='Avatar' src={image || undefined} theme={theme} />
-            <label htmlFor={name}>
-              <Input
-                accept='image/jpeg, image/jpg, image/png, image/gif'
-                hidden
-                id={name}
-                type='file'
-                onChange={(event) => {
-                  handleChange(event);
-                  onChange(event);
-                }}
-                error={!!error}
-                helperText={error ? error.message : undefined}
-                ref={ref}
-                {...otherFieldProps}
-              />
-              <Button variant='contained' color='primary' mb={2} onClick={handleClick}>
-                {image ? <DeleteIcon mr={2} /> : <UploadIcon mr={2} />}
-                {image ? 'Clean' : 'Upload'}
-              </Button>
-            </label>
-            <Typography variant='caption' display='block' gutterBottom>
-              To best results, use an image of at least 128 x 128 pixels in .jpg format.
-            </Typography>
-          </CenteredContent>
-          // <CenteredContent>
-          //   <BigAvatar $withBorder alt='Avatar' src={image || undefined} theme={theme} />
-          //   <Input
-          //     ref={inputFileRef}
-          //     accept='image/*'
-          //     hidden
-          //     name={name}
-          //     id={name}
-          //     type='file'
-          //     onChange={handleChange}
-          //     required={required}
-          //   />
-          //   <label htmlFor={name}>
-          //     <Button variant='contained' color='primary' component='span' mb={2} onClick={handleClick}>
-          //       {image ? <DeleteIcon mr={2} /> : <UploadIcon mr={2} />}
-          //       {image ? 'Clean' : 'Upload'}
-          //     </Button>
-          //   </label>
-          //   <Typography variant='caption' display='block' gutterBottom>
-          //     To best results, use an image of at least 128 x 128 pixels in .jpg format.
-          //   </Typography>
-          // </CenteredContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Badge
+              badgeContent={
+                field.value ? (
+                  <IconButton onClick={handleReset}>
+                    <DeleteIcon />
+                  </IconButton>
+                ) : null
+              }>
+              <BigAvatar src={avatar || undefined} $withBorder theme={theme} />
+            </Badge>
+            <FormHelperText error={!!error}>{error?.message}</FormHelperText>
+            <Button
+              color='primary'
+              aria-label='upload picture'
+              component='label'
+              {...otherProps}
+              disabled={!!field.value}>
+              <input hidden accept='image/*, image/heic, image/heif' type='file' {...field} onChange={handleChange} />
+              <UploadIcon mr={2} />
+              Upload
+            </Button>
+          </Box>
         );
       }}
       control={control}

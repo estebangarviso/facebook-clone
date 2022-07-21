@@ -8,10 +8,6 @@ export const Button = styled(MuiButton)(spacing);
 export const UploadIcon = styled(MuiCloudUpload)(spacing);
 export const DeleteIcon = styled(MuiDelete)(spacing);
 
-export const CenteredContent = styled.div`
-  text-align: center;
-`;
-
 export const BigAvatar = styled(Avatar)`
   width: 120px !important;
   height: 120px !important;

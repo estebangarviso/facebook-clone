@@ -1,6 +1,8 @@
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoudary';
 import HomePage from './pages/Home';
+import ProfilePage from './pages/Profile';
 import LoginPage from './pages/Login';
 import RegisterPage from './pages/Register';
 import PageNotFound from './pages/PageNotFound';
@@ -16,9 +18,17 @@ const App = () => {
         <GlobalProvider>
           <Layout>
             <Routes>
-              <Route path={AppRoutes.HOME.path} element={<HomePage />} />
-              <Route path={AppRoutes.LOGIN.path} element={<LoginPage />} />
-              <Route path={AppRoutes.REGISTER.path} element={<RegisterPage />} />
+              <Route
+                path={AppRoutes.HOME}
+                element={
+                  <ProtectedRoute>
+                    <HomePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path={AppRoutes.PROFILE} element={<ProfilePage />} />
+              <Route path={AppRoutes.LOGIN} element={<LoginPage />} />
+              <Route path={AppRoutes.REGISTER} element={<RegisterPage />} />
               <Route path='*' element={<PageNotFound />} />
             </Routes>
           </Layout>

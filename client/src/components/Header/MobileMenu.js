@@ -54,7 +54,7 @@ const MobileMenu = ({
           aria-haspopup='true'
           color='inherit'
           LinkComponent={Link}
-          to={AppRoutes.PROFILE.path}>
+          to={AppRoutes.PROFILE}>
           <AccountCircle />
         </IconButton>
         <p>Profile</p>

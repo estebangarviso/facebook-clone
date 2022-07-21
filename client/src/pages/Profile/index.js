@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Toolbar, Menu, MenuItem } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 const ProfilePage = () => {
   return (

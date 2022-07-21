@@ -1,34 +1,25 @@
 import React, { useContext } from 'react';
 import Form from '../Form';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import GlobalContext from '../../context';
-import AuthService from '../../services/auth.service';
+import AuthService from '../../services/AuthService';
 import FormTextField from '../Form/FormTextField';
 import FormButton from '../Form/FormButton';
-import { yupResolver } from '@hookform/resolvers/yup';
 import schema from './schema';
 import FormPassword from '../Form/FormPassword';
 
 const SignIn = () => {
   const { auth } = useContext(GlobalContext);
-  const handleSuccess = (data) => {
-    if (data.success) {
-      auth.setAuth(data.token, data.userId);
-    }
+  const handleSuccess = (res) => {
+    auth.setAuth(res.data.token, res.data.userId);
   };
   return (
-    <Form
-      serviceCallback={AuthService.login}
-      useFormProps={{
-        resolver: yupResolver(schema)
-      }}
-      onSuccess={handleSuccess}
-      >
+    <Form serviceCallback={AuthService.login} validationSchema={schema} onSuccess={handleSuccess} autoComplete='off'>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <FormTextField name='email' label='Email' variant='outlined' />
         <FormPassword name='password' label='Password' variant='outlined' />
-        <FormButton type='submit' variant='contained' color='primary'>
-          Log In
+        <FormButton type='submit' variant='contained' color='primary' animated>
+          <Typography variant='button'>Log In</Typography>
         </FormButton>
       </Box>
     </Form>

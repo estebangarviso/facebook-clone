@@ -17,10 +17,16 @@ app.use(cors({ credentials: true, origin: process.env.FRONTEND_ORIGIN || 'http:/
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(fileUpload());
 app.use(express.json());
+app.use('/', express.static('public'));
 
 // Routes
 app.use(PostRoute);
 app.use(UserRoute);
+app.get('*', (req, res) => {
+  res.status(404).json({
+    message: 'Not found'
+  });
+});
 
 app.listen(process.env.PORT || 3000, (event) => {
   console.log(`Server is running on port ${process.env.PORT || 3000}`.info);

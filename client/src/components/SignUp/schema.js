@@ -2,13 +2,12 @@ import * as yup from 'yup';
 
 const schema = yup
   .object({
-    avatar: yup
-      .string()
-      .required('Avatar is required')
-      .matches(/\.(png|jpg|jpeg|gif)$/i, {
-        message: 'Must be a valid image extension',
-        excludeEmptyString: true
-      }),
+    // avatar: yup.object().shape({
+    //   name: yup.string().required(),
+    //   type: yup.string().required(),
+    //   size: yup.number().required(),
+    // }).optional(),
+    avatar: yup.string().required(),
     name: yup
       .string()
       .required('Name is required')

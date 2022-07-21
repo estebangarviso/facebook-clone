@@ -2,19 +2,21 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import User from '../models/user.model.js';
+import { encryptedString } from '../utils/crypto.js';
 
-dotenv.config();
+dotenv.config({ path: './../.env' });
 
 const router = express.Router();
 
-router.post('/user/login', (req, res) => {
+router.post('/user/login', async (req, res) => {
   const body = req.body;
-  console.log(body);
-  const entity = new User();
-  const users = entity.readAll();
-  const user = users.find((item) => item.email === body.email);
-  if (user && user.password === body.password) {
-    try {
+  console.log({ body });
+  try {
+    const entity = new User();
+    const encryptedPassword = encryptedString(body.password);
+    const user = await entity.getOne({ email: body.email, password: encryptedPassword });
+    if (user) {
+      console.log('User is authenticated', user);
       const token = jwt.sign(
         {
           user: {
@@ -30,17 +32,17 @@ router.post('/user/login', (req, res) => {
         token,
         userId: user.userId
       });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        message: error.message
-      });
     }
-  }
 
-  return res.status(400).json({
-    message: 'invalid request'
-  });
+    return res.status(400).json({
+      message: 'Invalid email or password'
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: 'Internal server error'
+    });
+  }
 });
 
 router.post('/user/refresh', (req, res) => {
@@ -88,16 +90,27 @@ router.post('/user/refresh', (req, res) => {
 router.post('/user/register', (req, res) => {
   const body = req.body;
   const files = req.files;
-  console.log(body);
+  console.log({ body, files });
   try {
-    const user = new User();
-    user.create(body);
     //Use the name of the input field (i.e. "avatar") to retrieve the uploaded file
-    let avatar = files?.avatar;
     //Use the mv() method to place the file in upload directory (i.e. "uploads")
-    if (avatar) avatar.mv('./uploads/avatars' + avatar.name);
-
+    let avatar = files?.avatar;
+    if (avatar) {
+      const fileName = `${Date.now()}-${avatar.name}`;
+      avatar.mv('./public/uploads/avatars/' + fileName);
+      body.avatar = '/uploads/avatars/' + fileName;
+    } else {
+      body.avatar = null;
+    }
+    console.log('user-register:body', body);
+    const user = new User();
+    user.avatar = body.avatar;
+    user.name = body.name;
+    user.email = body.email;
+    user.password = encryptedString(body.password);
+    user.save();
     return res.status(200).json({
+      success: true,
       message: `User ${body.email} created`
     });
   } catch (error) {
@@ -119,25 +132,6 @@ router.post('/user/logout', (req, res) => {
     }
     // clean cookie token from browser
     res.clearCookie('token');
-    // ref: jwt-redis https://www.npmjs.com/package/jwt-redis
-    // in order to remove the token from the server you need to use jwt-redis
-    // import jwtRedis from 'jwt-redis';
-    // const tokens = [];
-    // ... // save the token to the server
-    // await jwtRedis.sign({
-    //   user: {
-    //     userId: userData.userId,
-    //     name: userData.name
-    //   }
-    // },
-    // process.env.ACCESS_TOKEN_SECRET,
-    // {
-    //   expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN
-    // });
-    // ... // verify the token on the server
-    // const decoded = await jwtRedis.verify(_token, process.env.ACCESS_TOKEN_SECRET);
-    // ... // remove token from server
-    // await jwtRedis.destroy({user:decoded.user}, process.env.ACCESS_TOKEN_SECRET);
   } catch (error) {
     console.error(error);
     return res.status(500).json({
@@ -149,40 +143,24 @@ router.post('/user/logout', (req, res) => {
   });
 });
 
-// !TODO
-router.post('/user/upload', async (req, res) => {
-  const token = req.cookies.token;
-  //Authorization: 'Bearer TOKEN'
-  if (!token) {
-    return res.status(401).json({ success: false, message: 'Error! Token was not provided.' });
-  }
-
-  try {
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    if (!req.files) {
-      res.send({
-        status: false,
-        message: 'No file uploaded'
-      });
-    } else {
-      //Use the name of the input field (i.e. "avatar") to retrieve the uploaded file
-      let avatar = req.files.avatar;
-
-      //Use the mv() method to place the file in upload directory (i.e. "uploads")
-      avatar.mv('./uploads/' + avatar.name);
-
-      //send res
-      res.send({
-        status: true,
-        message: 'File is uploaded',
-        name: avatar.name,
-        mimetype: avatar.mimetype,
-        size: avatar.size
-      });
-    }
-  } catch (err) {
-    res.status(500).send(err);
-  }
-});
-
 export default router;
+
+// ref: jwt-redis https://www.npmjs.com/package/jwt-redis
+// in order to remove the token from the server you need to use jwt-redis
+// import jwtRedis from 'jwt-redis';
+// const tokens = [];
+// ... // save the token to the server
+// await jwtRedis.sign({
+//   user: {
+//     userId: userData.userId,
+//     name: userData.name
+//   }
+// },
+// process.env.ACCESS_TOKEN_SECRET,
+// {
+//   expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN
+// });
+// ... // verify the token on the server
+// const decoded = await jwtRedis.verify(_token, process.env.ACCESS_TOKEN_SECRET);
+// ... // remove token from server
+// await jwtRedis.destroy({user:decoded.user}, process.env.ACCESS_TOKEN_SECRET);
