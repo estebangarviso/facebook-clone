@@ -34,6 +34,7 @@ async function addComment(formData) {
 async function getAllCommentsById(postId) {
   try {
     const res = await axios.get(ENDPOINT + '/' + postId + '/comment');
+    console.log('PostService.getAllCommentsById res', res);
     return handleSuccess(res);
   } catch (err) {
     return handleError(err);

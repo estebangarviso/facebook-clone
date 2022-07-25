@@ -25,8 +25,8 @@ export default class ErrorBoundary extends Component {
             <span>Something went wrong.</span>
             {this.state.error && (
               <>
-                <pre>{this.state.error.message}</pre>
-                <pre>{this.state.error.stack}</pre>
+                <pre>{this.state.error?.message}</pre>
+                <pre>{this.state.error?.stack}</pre>
               </>
             )}
           </Typography>

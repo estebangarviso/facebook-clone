@@ -13,7 +13,7 @@ const FormPage = ({ children, cardHeaderProps, title, checkToken = true, returnT
   const theme = createTheme(lightTheme);
   const { auth } = useContext(GlobalContext);
 
-  if (checkToken && auth.token) {
+  if (checkToken && auth.currentUser) {
     // redirect to home page
     return <Navigate to={returnTo} />;
   }

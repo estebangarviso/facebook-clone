@@ -5,7 +5,7 @@ import { AppRoutes } from '../../app/routes';
 
 const ProtectedRoute = ({ children }) => {
   const { auth } = useContext(GlobalContext);
-  if (!auth.token) {
+  if (!auth.currentUser) {
     return <Navigate to={AppRoutes.LOGIN} />;
   }
   return children;

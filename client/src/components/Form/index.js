@@ -50,7 +50,12 @@ const Form = ({
   const handleKeyPress = (e) => {
     if (!e.shiftKey && e.key === 'Enter' && enterSubmit) {
       e.preventDefault();
-      formRef.current.dispatchEvent(new Event('submit'));
+      formRef.current.dispatchEvent(
+        new Event('submit', {
+          bubbles: true, // Whether the event will bubble up through the DOM or not
+          cancelable: true // Whether the event may be canceled or not
+        })
+      );
     }
   };
 

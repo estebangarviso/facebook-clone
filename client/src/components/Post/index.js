@@ -8,48 +8,78 @@ import {
   CardActions,
   IconButton,
   Avatar,
-  Stack
+  Stack,
+  Skeleton
 } from '@mui/material';
 import { MoreVert as MoreVertIcon, Comment as CommentIcon } from '@mui/icons-material';
 import { AppConfig } from '../../app/config';
 import Comments from '../Comments';
 
-const Post = ({ postId, user, createdAt, content, media }) => {
+const Post = ({ _id, user, createdAt, content, media, loading }) => {
   const [showComments, setShowComments] = useState(false);
   const handleComment = () => {
     setShowComments(!showComments);
   };
   return (
-    <Card key={postId} style={{ marginBottom: '1rem' }}>
-      <CardHeader
-        avatar={<Avatar aria-label='avatar' src={AppConfig.BACKEND_URL + user.avatar} />}
-        action={
-          <IconButton aria-label='settings'>
-            <MoreVertIcon />
-          </IconButton>
+    <Card
+      key={_id}
+      style={{ marginBottom: '1rem' }}
+      sx={{
+        '.MuiCardHeader-avatar .MuiSkeleton-root, .MuiCardHeader-avatar .MuiAvatar-root': {
+          width: '40px',
+          height: '40px'
         }
-        title={user.name}
-        subheader={createdAt}
+      }}>
+      <CardHeader
+        avatar={
+          loading ? (
+            <Skeleton animation='wave' variant='circular' />
+          ) : (
+            <Avatar aria-label='avatar' src={AppConfig.BACKEND_URL + user.avatar} />
+          )
+        }
+        action={
+          loading ? null : (
+            <IconButton aria-label='settings'>
+              <MoreVertIcon />
+            </IconButton>
+          )
+        }
+        title={loading ? <Skeleton animation='wave' height={10} width='80%' style={{ marginBottom: 6 }} /> : user.name}
+        subheader={loading ? <Skeleton animation='wave' height={10} width='40%' /> : createdAt}
       />
       <CardContent>
         <Typography variant='body2' color='textSecondary' component='p'>
-          {content}
+          {loading ? (
+            <>
+              <Skeleton animation='wave' height={10} style={{ marginBottom: 6 }} />
+              <Skeleton animation='wave' height={10} width='80%' />
+            </>
+          ) : (
+            content
+          )}
         </Typography>
       </CardContent>
-      {media && <CardMedia image={AppConfig.BACKEND_URL + media} style={{ height: '200px' }} component='img' />}
-      <CardActions disableSpacing>
-        <Stack spacing={1}>
-          <IconButton aria-label='comment' sx={{ borderRadius: '5px' }} onClick={handleComment}>
-            <CommentIcon />
-            <Typography variant='body2' color='textSecondary' component='p'>
-              Comment
-            </Typography>
-          </IconButton>
-        </Stack>
-      </CardActions>
+      {loading ? (
+        <Skeleton sx={{ height: 190 }} animation='wave' variant='rectangular' />
+      ) : (
+        media && <CardMedia image={AppConfig.BACKEND_URL + media} style={{ height: '200px' }} component='img' />
+      )}
+      {loading ? null : (
+        <CardActions disableSpacing>
+          <Stack spacing={1}>
+            <IconButton aria-label='comment' sx={{ borderRadius: '5px' }} onClick={handleComment}>
+              <CommentIcon />
+              <Typography variant='body2' color='textSecondary' component='p'>
+                Comment
+              </Typography>
+            </IconButton>
+          </Stack>
+        </CardActions>
+      )}
       {showComments && (
         <CardContent sx={{ px: 0 }}>
-          <Comments postId={postId} />
+          <Comments postId={_id} />
         </CardContent>
       )}
     </Card>

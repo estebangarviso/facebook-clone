@@ -1,19 +1,13 @@
 import React, { useState, useContext } from 'react';
-// import { AppRoutes } from '../../app/routes';
-// import { Link } from 'react-router-dom';
 import { ReactComponent as Logo } from '../../assets/logo.svg';
-import { AppBar, Box, Toolbar, IconButton, Badge, SvgIcon } from '@mui/material';
-import {
-  AccountCircle,
-  Mail as MailIcon,
-  Notifications as NotificationsIcon,
-  MoreVert as MoreIcon
-} from '@mui/icons-material';
+import { AppBar, Box, Toolbar, IconButton, Badge, SvgIcon, Avatar } from '@mui/material';
+import { Mail as MailIcon, Notifications as NotificationsIcon, MoreVert as MoreIcon } from '@mui/icons-material';
 import Search from '../Search';
 import GlobalContext from '../../context';
 import UserMenu from './UserMenu';
 import MobileMenu from './MobileMenu';
 import ThemeSwitcherIconButton from '../ThemeSwitcherIconButton';
+import { AppConfig } from '../../app/config';
 
 const Header = () => {
   const { auth } = useContext(GlobalContext);
@@ -44,7 +38,7 @@ const Header = () => {
   const mobileMenuId = 'primary-search-account-menu-mobile';
 
   return (
-    auth.token && (
+    auth.currentUser && (
       <>
         <AppBar position='static'>
           <Toolbar>
@@ -58,7 +52,15 @@ const Header = () => {
             />
             <Search sx={{ borderRadius: '50px' }} />
             <Box sx={{ flexGrow: 1 }} />
-            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <Box
+              sx={{
+                display: {
+                  xs: 'none',
+                  md: 'flex',
+                  '.MuiButtonBase-root': { height: '40px', width: '40px' },
+                  gap: '0.5rem'
+                }
+              }}>
               <IconButton size='large' aria-label='show 4 new mails' color='inherit'>
                 {' '}
                 {/* !TODO: Dropdown to mailbox  */}
@@ -75,14 +77,12 @@ const Header = () => {
               </IconButton>
               <ThemeSwitcherIconButton size='large' aria-label='switch theme' color='inherit' hideText />
               <IconButton
-                size='large'
-                edge='end'
                 aria-label='account of current user'
                 aria-controls={userMenuId}
                 aria-haspopup='true'
                 onClick={handleProfileMenuOpen}
                 color='inherit'>
-                <AccountCircle />
+                <Avatar src={AppConfig.BACKEND_URL + auth.currentUser.avatar} alt='avatar' />
               </IconButton>
             </Box>
             <Box sx={{ display: { xs: 'flex', md: 'none' } }}>

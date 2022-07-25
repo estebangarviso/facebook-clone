@@ -8,7 +8,7 @@ import GlobalContext from '../../context';
 const Footer = () => {
   const { auth } = useContext(GlobalContext);
   return (
-    !auth.token && (
+    !auth.currentUser && (
       <Box
         id='footer'
         component='footer'

@@ -40,10 +40,9 @@ export const getDesignTokens = (mode) => ({
 });
 const GlobalContext = createContext({
   auth: {
-    token: null,
-    userId: null,
+    currentUser: null,
     logout: () => {},
-    login: (token, userId) => {}
+    login: (token) => {}
   },
   colorMode: { toggleColorMode: () => {} }
 });
@@ -53,15 +52,20 @@ export default GlobalContext;
 export const GlobalProvider = ({ children }) => {
   /** auth - end */
   const intervalRef = useRef();
-  const [token, setToken] = useState(localStorage.getItem('token'));
-  const [userId, setUserId] = useState(localStorage.getItem('userId'));
+  const [currentUser, setCurrentUser] = useState(
+    useMemo(() => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        return jwt_decode(token);
+      }
+      return null;
+    }, [])
+  );
   const [showModalTokenIsAboutToExpire, setShowModalTokenIsAboutToExpire] = useState(false);
 
   const logout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('userId');
-    setToken(null);
-    setUserId(null);
+    setCurrentUser(null);
     setShowModalTokenIsAboutToExpire(false);
     clearInterval(intervalRef.current);
     document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
@@ -77,12 +81,10 @@ export const GlobalProvider = ({ children }) => {
       });
   };
 
-  const setAuth = (token, userId) => {
+  const setAuth = (token) => {
     const decodedToken = jwt_decode(token);
     localStorage.setItem('token', token);
-    localStorage.setItem('userId', userId);
-    setToken(token);
-    setUserId(userId);
+    setCurrentUser(decodedToken.user);
     const tokenExp = decodedToken.exp;
     const tokenIat = decodedToken.iat;
     // set the cookie token
@@ -111,10 +113,10 @@ export const GlobalProvider = ({ children }) => {
   };
 
   const refreshToken = () => {
-    if (token) {
+    if (currentUser) {
       AuthService.refresh()
         .then((res) => {
-          if (res.status === 200) setAuth(res.data.token, userId);
+          if (res.status === 200) setAuth(res.data.token);
           else logout();
         })
         .catch((err) => {
@@ -130,8 +132,7 @@ export const GlobalProvider = ({ children }) => {
   };
 
   const auth = {
-    token,
-    userId,
+    currentUser,
     logout,
     setAuth
   };

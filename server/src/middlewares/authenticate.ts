@@ -1,22 +1,27 @@
-import { Response, NextFunction } from 'express';
+import { RequestHandler } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { UnauthorizedError } from '@utils/index';
-import { ACCESS_TOKEN_SECRET } from '@config/index';
-import { RequestWithUser } from '@@types/index';
+import { ACCESS_TOKEN_SECRET } from '../config';
 
-export default function (req: RequestWithUser, res: Response, next: NextFunction) {
+const authenticate: RequestHandler = (req, res, next) => {
   const token = req.cookies.token;
 
   if (!token) {
-    throw new UnauthorizedError('No token provided');
+    return res.status(401).json({
+      message: 'No token provided'
+    });
   }
 
   //Decoding the token
   try {
-    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET) as JwtPayload & { user: DecodedUser };
-    req.headers.user = decoded.user;
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET as string) as JwtPayload;
+    req.user = decoded.user;
+
     next();
   } catch (error) {
-    throw new UnauthorizedError('Invalid token');
+    return res.status(401).json({
+      message: 'Invalid token'
+    });
   }
-}
+};
+
+export default authenticate;

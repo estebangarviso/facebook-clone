@@ -4,10 +4,10 @@ import { List, Box, Avatar, Typography, Link, Stack } from '@mui/material';
 import { AppConfig } from './../../app/config';
 import { StyledComment } from './StyledComponents';
 
-const Comment = ({ commentId, content, createdAt, postId, user, userId, comments, ...otherProps }) => {
+const Comment = ({ _id: commentId, content, createdAt, post: postId, user, comments, ...otherProps }) => {
   const [showReplies, setShowReplies] = useState(false);
-  const replies = comments.filter((comment) => comment.replyTo === commentId);
-  const hasReplies = comments.some((comment) => comment.replyTo === commentId);
+  const replies = comments.filter((comment) => comment.replyTo?._id === commentId);
+  const hasReplies = comments.some((comment) => comment.replyTo?._id === commentId);
   return (
     <StyledComment {...otherProps} disablePadding>
       <Box position='relative'>
@@ -15,7 +15,7 @@ const Comment = ({ commentId, content, createdAt, postId, user, userId, comments
         <Box display='flex' alignItems='center' flexDirection='row' sx={{ width: '100%' }} position='relative'>
           <Avatar
             sx={{ mr: 1, width: '32px', height: '32px', alignSelf: 'start', zIndex: 1 }}
-            src={!user?.avatar ? undefined : AppConfig.BACKEND_URL + user.avatar}
+            src={AppConfig.BACKEND_URL + user.avatar}
           />
           <Box sx={{ flex: 1 }}>
             <Box bgcolor='background.comment' sx={{ borderRadius: '5px', py: '8px', px: '12px' }}>
@@ -40,11 +40,11 @@ const Comment = ({ commentId, content, createdAt, postId, user, userId, comments
       <Box sx={{ width: '100%' }}>
         {replies.map((comment, index, array) => (
           <List sx={{ width: '100%' }} dense disablePadding>
-            <Comment key={comment.commentId} {...comment} comments={comments} className='reply' />
+            <Comment key={comment._id} {...comment} comments={comments} className='reply' />
           </List>
         ))}
         {showReplies && (
-          <CommentForm postId={postId} replyTo={commentId} label={`Reply to ${user?.name}...`} popUpError />
+          <CommentForm user={user} postId={postId} replyTo={commentId} label={`Reply to ${user?.name}...`} popUpError />
         )}
       </Box>
     </StyledComment>

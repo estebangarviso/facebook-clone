@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import Comment from '../Comment';
 import CommentForm from '../CommentForm';
-import { List } from '@mui/material';
+import { List, CircularProgress } from '@mui/material';
 import PostService from '../../services/PostService';
 import { StyledComments } from './StyledComponents';
 
-const Comments = ({ postId }) => {
-  const [comments, setComments] = useState([]);
+const Comments = ({ postId, user }) => {
+  const [comments, setComments] = useState({ loading: true });
 
   useEffect(() => {
     PostService.getAllCommentsById(postId).then((res) => {
@@ -16,15 +16,19 @@ const Comments = ({ postId }) => {
   }, []);
   return (
     <StyledComments display='flex' flexDirection='column'>
-      <CommentForm postId={postId} popUpError sx={{ px: '16px', py: '4px' }} />
-      {comments.length > 0 && (
-        <List sx={{ width: '100%' }} dense disablePadding className='comments'>
-          {comments
-            .filter((comment) => !comment?.replyTo)
-            .map((comment) => (
-              <Comment rootNode key={comment.commentId} {...comment} comments={comments} />
-            ))}
-        </List>
+      {comments.loading ? (
+        <CircularProgress sx={{ alignSelf: 'center' }} />
+      ) : (
+        <>
+          <CommentForm postId={postId} popUpError sx={{ px: '16px', py: '4px' }} />
+          <List sx={{ width: '100%' }} dense disablePadding className='comments'>
+            {comments
+              .filter((comment) => !comment?.replyTo)
+              .map((comment) => (
+                <Comment rootNode key={comment._id} {...comment} comments={comments} />
+              ))}
+          </List>
+        </>
       )}
     </StyledComments>
   );

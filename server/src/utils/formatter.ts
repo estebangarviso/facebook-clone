@@ -3,8 +3,8 @@
  * @param {string} date - date in format YYYY-MM-DD00:00:00.000Z
  * @returns {string} - number of days|hours|minutes|seconds since date
  */
-export function getTimeSince(date) {
-  var seconds = Math.floor((new Date() - date) / 1000);
+export function getTimeSince(date: number) {
+  var seconds = Math.floor((new Date().getTime() - date) / 1000);
 
   var interval = seconds / 31536000;
 
