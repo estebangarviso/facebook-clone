@@ -63,7 +63,19 @@ const Post = ({ _id, user, createdAt, content, media, loading }) => {
       {loading ? (
         <Skeleton sx={{ height: 190 }} animation='wave' variant='rectangular' />
       ) : (
-        media && <CardMedia image={AppConfig.BACKEND_URL + media} style={{ height: '200px' }} component='img' />
+        media && (
+          <CardMedia
+            image={AppConfig.BACKEND_URL + media}
+            component='div'
+            sx={{
+              backgroundSize: 'contain',
+              backgroundPosition: 'center',
+              minWidth: '500px',
+              width: 'auto',
+              height: '280px'
+            }}
+          />
+        )
       )}
       {loading ? null : (
         <CardActions disableSpacing>

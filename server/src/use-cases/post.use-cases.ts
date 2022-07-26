@@ -26,7 +26,7 @@ const createPost = async (req: Request, res: Response) => {
     }
 
     const post = new Post(body);
-    await post.save();
+    await post.save().then(async (_post) => await _post.populate('user', 'avatar name'));
     sendWebSocketMessage({
       data: {
         type: 'post',
@@ -56,7 +56,8 @@ const createComment = async (req: Request, res: Response) => {
       post: postId,
       replyTo: body.replyTo
     });
-    await comment.save();
+    await comment.save().then(async (_comment) => await _comment.populate('user', 'avatar name'));
+    console.log('Log from createComment: ', comment);
     sendWebSocketMessage({
       data: {
         type: 'comment',

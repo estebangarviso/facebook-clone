@@ -56,7 +56,8 @@ export const GlobalProvider = ({ children }) => {
     useMemo(() => {
       const token = localStorage.getItem('token');
       if (token) {
-        return jwt_decode(token);
+        const decodedToken = jwt_decode(token);
+        return decodedToken?.user;
       }
       return null;
     }, [])

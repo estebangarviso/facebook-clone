@@ -27,4 +27,6 @@ server/node_modules
 server/.DS_Store
 server/yarn-error.log
 sagar.js
+mongodb.js
+Ws-Demo
 .DS_Store
