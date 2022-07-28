@@ -40,6 +40,10 @@ const Form = ({
         console.log('onSuccess error', { res });
         setError(res.data.message);
       }
+      if (res.sucess || res.status === 200) {
+        formRef?.current?.reset();
+        methods.reset();
+      }
     } catch (err) {
       console.log('onSubmit from Form catch', err);
       setError(err.message);
@@ -50,22 +54,17 @@ const Form = ({
   const handleKeyPress = (e) => {
     if (!e.shiftKey && e.key === 'Enter' && enterSubmit) {
       e.preventDefault();
-      formRef.current.dispatchEvent(
-        new Event('submit', {
-          bubbles: true, // Whether the event will bubble up through the DOM or not
-          cancelable: true // Whether the event may be canceled or not
-        })
-      );
+      formRef?.current?.submit();
     }
   };
 
   return (
     <FormProvider {...methods}>
       <StyledForm
+        ref={formRef}
         onSubmit={methods.handleSubmit(onSubmit)}
         onKeyPress={handleKeyPress}
         noValidate
-        ref={formRef}
         {...otherProps}>
         {children}
       </StyledForm>

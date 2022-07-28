@@ -14,6 +14,7 @@ import {
 import { MoreVert as MoreVertIcon, Comment as CommentIcon } from '@mui/icons-material';
 import { AppConfig } from '../../app/config';
 import Comments from '../Comments';
+import TimeAgo from '../TimeAgo';
 
 const Post = ({ _id, user, createdAt, content, media, loading }) => {
   const [showComments, setShowComments] = useState(false);
@@ -22,7 +23,6 @@ const Post = ({ _id, user, createdAt, content, media, loading }) => {
   };
   return (
     <Card
-      key={_id}
       style={{ marginBottom: '1rem' }}
       sx={{
         '.MuiCardHeader-avatar .MuiSkeleton-root, .MuiCardHeader-avatar .MuiAvatar-root': {
@@ -45,8 +45,14 @@ const Post = ({ _id, user, createdAt, content, media, loading }) => {
             </IconButton>
           )
         }
-        title={loading ? <Skeleton animation='wave' height={10} width='80%' style={{ marginBottom: 6 }} /> : user.name}
-        subheader={loading ? <Skeleton animation='wave' height={10} width='40%' /> : createdAt}
+        title={
+          loading ? (
+            <Skeleton animation='wave' height={10} width='80%' style={{ marginBottom: 6 }} />
+          ) : (
+            user?.name?.fullname
+          )
+        }
+        subheader={loading ? <Skeleton animation='wave' height={10} width='40%' /> : <TimeAgo timestamp={createdAt} />}
       />
       <CardContent>
         <Typography variant='body2' color='textSecondary' component='p'>

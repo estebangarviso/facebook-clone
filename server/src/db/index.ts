@@ -1,5 +1,6 @@
 import mongoose, { ConnectOptions } from 'mongoose';
 import { DB_URI, DB_NAME } from '../config';
+import { Logger } from '../utils';
 
 if (!DB_URI) {
   throw new Error('DB_URI is not defined');
@@ -9,6 +10,7 @@ if (!DB_NAME) {
 }
 
 (function connect() {
+  Logger.info(`Connecting to ${DB_NAME} database...`);
   mongoose.connect(`${DB_URI}`, {
     dbName: DB_NAME,
     keepAlive: true,
@@ -17,9 +19,9 @@ if (!DB_NAME) {
   } as ConnectOptions);
 
   return mongoose.connection
-    .on('error', console.error.bind(console, 'MongoDB connection error:'))
+    .on('error', Logger.error.bind(Logger, 'MongoDB connection error:'))
     .on('disconnected', connect)
     .once('open', () => {
-      console.log(`MongoDB connected to ${DB_URI} with database ${DB_NAME}`);
+      Logger.success(`MongoDB connected to ${DB_NAME}`);
     });
 })();

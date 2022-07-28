@@ -18,15 +18,31 @@ export const UserSchema = new Schema<IUser>(
       }
     },
     name: {
-      type: String,
-      required: true,
-      validate: {
-        validator: (name: string) => {
-          // @ts-ignore
-          if (UserSchema.methods.skipValidation()) return true;
-          return UserValidation.name(name);
+      first: {
+        type: String,
+        required: true,
+        validate: {
+          validator: (firstName: string) => {
+            // @ts-ignore
+            if (UserSchema.methods.skipValidation()) return true;
+            return UserValidation.name(firstName);
+          },
+          message: 'First name must be at least 2 characters long'
         },
-        message: 'Name must be only letters and spaces'
+        trim: true
+      },
+      last: {
+        type: String,
+        required: true,
+        validate: {
+          validator: (lastName: string) => {
+            // @ts-ignore
+            if (UserSchema.methods.skipValidation()) return true;
+            return UserValidation.name(lastName);
+          },
+          message: 'Last name must be at least 2 characters long'
+        },
+        trim: true
       }
     },
     email: {
@@ -61,6 +77,13 @@ export const UserSchema = new Schema<IUser>(
     methods: UserMethods
   }
 );
+
+/**
+ * Virtuals
+ */
+UserSchema.virtual('fullname').get(function () {
+  return `${this.name.first} ${this.name.last}`;
+});
 
 UserSchema.pre('save', preSaveUser);
 

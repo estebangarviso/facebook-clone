@@ -3,11 +3,13 @@ import Form from '../Form';
 import FormTextField from '../Form/FormTextField';
 import { Box, Avatar } from '@mui/material';
 import schema from './schema';
-import PostService from '../../services/PostService';
+import { addComment } from '../../services/PostService';
 import { AppConfig } from '../../app/config';
 import GlobalContext from '../../context';
+import { useDispatch } from 'react-redux';
 
 const CommentForm = ({ postId, replyTo = undefined, label = 'Write a comment...', ...otherProps }) => {
+  const dispatch = useDispatch();
   const { auth } = useContext(GlobalContext);
   const handleServiceCallback = async (formData) => {
     // add post id to form data
@@ -16,9 +18,8 @@ const CommentForm = ({ postId, replyTo = undefined, label = 'Write a comment...'
     if (replyTo) {
       formData.append('replyTo', replyTo);
     }
-    // send form data to server
-    const res = await PostService.addComment(formData);
-    return res;
+
+    dispatch(addComment(formData));
   };
   return (
     <Box display='flex' flexDirection='row' {...otherProps}>

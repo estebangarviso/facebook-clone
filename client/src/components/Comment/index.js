@@ -3,6 +3,7 @@ import CommentForm from '../CommentForm';
 import { List, Box, Avatar, Typography, Link, Stack } from '@mui/material';
 import { AppConfig } from './../../app/config';
 import { StyledComment } from './StyledComponents';
+// import TimeAgo from '../TimeAgo';
 
 const Comment = ({ _id: commentId, content, createdAt, post: postId, user, comments, ...otherProps }) => {
   const [showReplies, setShowReplies] = useState(false);
@@ -20,7 +21,7 @@ const Comment = ({ _id: commentId, content, createdAt, post: postId, user, comme
           <Box sx={{ flex: 1 }}>
             <Box bgcolor='background.comment' sx={{ borderRadius: '5px', py: '8px', px: '12px' }}>
               <Typography color='text.primary' sx={{ fontWeight: 'bold', fontSize: '.8125rem' }}>
-                {user?.name}
+                {user?.name?.first}
               </Typography>
               <Typography variant='body2' color='text.primary'>
                 {content}
@@ -44,7 +45,13 @@ const Comment = ({ _id: commentId, content, createdAt, post: postId, user, comme
           </List>
         ))}
         {showReplies && (
-          <CommentForm user={user} postId={postId} replyTo={commentId} label={`Reply to ${user?.name}...`} popUpError />
+          <CommentForm
+            user={user}
+            postId={postId}
+            replyTo={commentId}
+            label={`Reply to ${user?.name?.first}...`}
+            popUpError
+          />
         )}
       </Box>
     </StyledComment>

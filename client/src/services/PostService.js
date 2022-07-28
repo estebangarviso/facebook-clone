@@ -1,27 +1,29 @@
 import axios, { handleError, handleSuccess } from '../utils/axios';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
 const ENDPOINT = '/post';
 
-async function getAll() {
+export const getAllPosts = createAsyncThunk('posts/getAllPosts', async () => {
   try {
     const res = await axios.get(ENDPOINT);
-    return handleSuccess(res);
+    return res.data;
   } catch (err) {
     return handleError(err);
   }
-}
+});
 
+export const addPost = createAsyncThunk('posts/addPost', add);
 async function add(formData) {
   console.log('PostService.add formData', formData);
   try {
     const res = await axios.post(ENDPOINT, formData);
-    return handleSuccess(res);
+    return res.data;
   } catch (err) {
     return handleError(err);
   }
 }
 
-async function addComment(formData) {
+export const addComment = createAsyncThunk('comments/addComment', async (formData) => {
   console.log('PostService.addComment formData', formData);
   try {
     const res = await axios.post(ENDPOINT + '/' + formData.get('postId') + '/comment', formData);
@@ -29,8 +31,9 @@ async function addComment(formData) {
   } catch (err) {
     return handleError(err);
   }
-}
+});
 
+export const getAllCommentsByPostId = createAsyncThunk('posts/getAllCommentsByPostId', getAllCommentsById);
 async function getAllCommentsById(postId) {
   try {
     const res = await axios.get(ENDPOINT + '/' + postId + '/comment');
@@ -42,9 +45,7 @@ async function getAllCommentsById(postId) {
 }
 
 const PostService = {
-  getAll,
   add,
-  addComment,
   getAllCommentsById
 };
 

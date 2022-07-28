@@ -1,15 +1,16 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { useTheme } from '@mui/material/styles';
-import GlobalContext from '../../context';
 import { IconButton, Typography } from '@mui/material';
 import { Brightness7 as Brightness7Icon, Brightness4 as Brightness4Icon } from '@mui/icons-material';
+import { useDispatch } from 'react-redux';
+import { toggleTheme } from '../../app/store/themeSlice';
 
 const ThemeSwitcherIconButton = ({ hideText, otherProps }) => {
   const theme = useTheme();
-  const { colorMode } = useContext(GlobalContext);
+  const dispatch = useDispatch();
   return (
     <>
-      <IconButton size='large' aria-label='theme switcher' color='inherit' onClick={colorMode.toggleColorMode}>
+      <IconButton size='large' aria-label='theme switcher' color='inherit' onClick={() => dispatch(toggleTheme())}>
         {' '}
         {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
       </IconButton>

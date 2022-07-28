@@ -1,7 +1,8 @@
 import React, { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Box, Card, CardContent, CardHeader, SvgIcon, CssBaseline } from '@mui/material';
-import GlobalContext, { getDesignTokens } from '../../context';
+import GlobalContext from '../../context';
+import { getDesignTokens } from '../../app/theme';
 import { AppRoutes } from '../../app/routes';
 import { ReactComponent as FacebookLogo } from './../../assets/facebook.svg';
 import { ThemeProvider, createTheme } from '@mui/material';

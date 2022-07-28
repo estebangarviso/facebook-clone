@@ -2,7 +2,11 @@ import { Document } from 'mongoose';
 
 export interface IUser extends Document {
   avatar: string;
-  name: string;
+  name: {
+    first: string;
+    last: string;
+  };
+  fullname: string;
   email: string;
   password: string;
   skipValidation: () => boolean;

@@ -29,7 +29,6 @@ const Comments = ({ postId }) => {
           e.data
             .text()
             .then((data) => {
-              // console.log('got a message: ' + data);
               const parsedData = JSON.parse(data);
               const { type, payload } = parsedData.data;
               if (type === 'comment' && payload.post === postId) {

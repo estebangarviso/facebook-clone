@@ -1,13 +1,12 @@
 import { Request, Response } from 'express';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { User } from '../models';
 import { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_EXPIRES_IN, PUBLIC_DIR } from '../config';
 import { UploadedFile } from 'express-fileupload';
-import { Logger } from '../utils';
+import { Logger, userPayload } from '../utils';
 
 const authenticate = async (req: Request, res: Response) => {
   const body = req.body;
-
   try {
     const user = await User.findOne({ email: body.email });
     if (user) {
@@ -15,23 +14,14 @@ const authenticate = async (req: Request, res: Response) => {
       user.comparePassword(body.password, (_err: any, isMatch: boolean) => {
         if (_err) throw _err;
         if (isMatch) {
-          const payload: JwtPayload['user'] = {
-            _id: user._id + '',
-            name: user.name,
-            email: user.email,
-            avatar: user.avatar
-          };
-          console.log({ payload });
-
           const token = jwt.sign(
             {
-              user: payload
+              user: userPayload(user)
             },
             ACCESS_TOKEN_SECRET as string,
             { expiresIn: ACCESS_TOKEN_EXPIRES_IN }
           );
-          Logger.log(`User ${user.name} logged in`);
-
+          Logger.log(`User ${user.fullname} logged in`);
           response = res.status(200).json({
             success: true,
             token
@@ -44,7 +34,6 @@ const authenticate = async (req: Request, res: Response) => {
       });
       return response;
     }
-
     return res.status(400).json({
       message: 'Invalid email or password'
     });
@@ -70,7 +59,10 @@ const register = async (req: Request, res: Response) => {
       body.avatar = null;
     }
     const user = new User({
-      name: body.name,
+      name: {
+        first: body.firstName,
+        last: body.lastName
+      },
       email: body.email,
       password: body.password,
       avatar: body.avatar
@@ -80,7 +72,7 @@ const register = async (req: Request, res: Response) => {
     if (avatar) {
       avatar.mv(PUBLIC_DIR + '/uploads/avatars/' + fileName);
     }
-    Logger.log(`User ${user.name} registered`);
+    Logger.log(`User ${user.name.first} ${user.name.last} registered`);
     return res.status(200).json({
       success: true,
       message: `User ${body.email} created`
@@ -105,8 +97,8 @@ const refresh = async (req: Request, res: Response) => {
     });
   }
   try {
-    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET) as JwtPayload;
-    Logger.log(`User ${decoded.user.name} refreshed token`);
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET) as jwt.JwtPayload;
+    Logger.log(`User ${decoded.user.fullname} refreshed token`);
     const userId = decoded.user._id;
     const user = await User.findById(userId);
     if (!user) {
@@ -114,12 +106,10 @@ const refresh = async (req: Request, res: Response) => {
         message: 'User not found from token'
       });
     }
+
     const _token = jwt.sign(
       {
-        user: {
-          userId: user._id + '',
-          name: user.name
-        }
+        user: userPayload(user)
       },
       ACCESS_TOKEN_SECRET as string,
       {

@@ -34,11 +34,11 @@ app.get('*', (req, res) => {
 });
 
 const server = app.listen(PORT, () => {
-  Logger.info(`Server is running on port ${PORT}`);
+  Logger.success(`Server is running on port ${PORT}`);
 });
 
 function listen() {
-  Logger.info(`MongoDB connected to ${DB_URI} with database ${DB_NAME}`);
+  Logger.success(`MongoDB connected to ${DB_NAME}`);
   if (app.get('env') === 'test') return;
   InitializedWebSocketServer(server);
 }
@@ -53,7 +53,7 @@ function listen() {
   } as ConnectOptions);
 
   return mongoose.connection
-    .on('error', console.error.bind(console, 'MongoDB connection error:'))
+    .on('error', Logger.error.bind(Logger, 'MongoDB connection error:'))
     .on('disconnected', connect)
     .once('open', listen);
 })();

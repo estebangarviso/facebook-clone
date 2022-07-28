@@ -29,7 +29,7 @@ const createPost = async (req: Request, res: Response) => {
     await post.save().then(async (_post) => await _post.populate('user', 'avatar name'));
     sendWebSocketMessage({
       data: {
-        type: 'post',
+        type: 'posts/postAdded',
         payload: post
       },
       clients: 'ALL'
@@ -60,7 +60,7 @@ const createComment = async (req: Request, res: Response) => {
     console.log('Log from createComment: ', comment);
     sendWebSocketMessage({
       data: {
-        type: 'comment',
+        type: 'comments/commentAdded',
         payload: comment
       },
       clients: 'ALL'

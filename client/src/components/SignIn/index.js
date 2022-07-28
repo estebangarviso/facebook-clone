@@ -11,7 +11,7 @@ import FormPassword from '../Form/FormPassword';
 const SignIn = () => {
   const { auth } = useContext(GlobalContext);
   const handleSuccess = (res) => {
-    auth.setAuth(res.data.token);
+    auth.login(res.data.token);
   };
   return (
     <Form serviceCallback={AuthService.login} validationSchema={schema} onSuccess={handleSuccess} autoComplete='off'>

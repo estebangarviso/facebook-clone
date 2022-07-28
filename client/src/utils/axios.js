@@ -8,12 +8,12 @@ axios.defaults.headers.common['Content-Type'] = 'multipart/form-data';
 
 export async function handleSuccess(res) {
   const response = await res;
-  console.log(`Response on method`, response);
+  console.log(`Response on handleSuccess`, response);
   return response;
 }
 
 export function handleError(err) {
-  console.error(`Error on method`, err);
+  console.error(`Error on handleError`, err);
   return err.response;
 }
 

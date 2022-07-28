@@ -46,6 +46,6 @@ export default {
     if (!WEBSOCKET_SERVER_KEY) {
       throw new Error('WEBSOCKET_SERVER_KEY is not defined');
     }
-    Logger.info(`Environment variables are set correctly`);
+    Logger.success(`Environment variables are set correctly`);
   }
 };

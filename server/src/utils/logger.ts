@@ -4,60 +4,68 @@ import WebSocketServer from 'ws';
 export class Logger {
   static log(message: string | any, color: Color = green) {
     if (typeof message === 'string') {
-      console.log(`[app] 🪵 ${color(message)}`);
+      console.log(color(`[app] 🪵 ${message}`));
     } else {
-      console.log(`[app] 🪵 ${color(`Log started --------------------------------------------------`)}`);
+      console.log(color(`[app] 🪵 Log started --------------------------------------------------`));
       console.log(message);
-      console.log(`[app] 🪵 ${color(`Log ended --------------------------------------------------`)}`);
+      console.log(color(`[app] 🪵 Log ended --------------------------------------------------`));
+    }
+  }
+
+  static success(message: string | object) {
+    if (typeof message === 'string') {
+      console.log(green(`[app] 🟢 ${message}`));
+    } else {
+      console.log(green(`[app] 🟢 Success started --------------------------------------------------`));
+      console.log(message);
+      console.log(green(`[app] 🟢 Success ended --------------------------------------------------`));
     }
   }
 
   static error(e: Error | WebSocketServer.ErrorEvent | any) {
     if (e instanceof Error) {
       const errorStack = e?.stack?.split('\n');
-      console.error(`[app] 🔴 ${red(e.message)}`);
+      console.error(red(`[app] 🔴 ${e.message}`));
       if (errorStack) {
-        let i = 0;
         errorStack.forEach((line) => {
-          i++;
-          console.error(`${i}# ${red(line)}`);
+          console.error(red(`${line}`));
         });
       }
     } else {
       if (e.target instanceof WebSocketServer) {
         const wsError = e as WebSocketServer.ErrorEvent;
-        console.error(`[app] 🔴 ${red(`WebSocketServer Error Message: ${wsError.message}`)}`);
+        console.error(red(`[app] 🔴 WebSocketServer Error Message: ${wsError.message}`));
         if (wsError.type) {
-          console.error(`[app] 🔴 ${red(`Type: wsError.type`)}`);
+          console.error(red(`[app] Type: ${wsError.type}`));
         }
         if (wsError.error) {
-          console.error(`[app] 🔴 ${red(`Error: `)}`, wsError.error);
+          console.error(red(`[app] Error: `), wsError.error);
         }
         return;
       }
-      console.error(`[app] 🔴 ${red(`Error started --------------------------------------------------`)}`);
+      console.error(red(`[app] 🔴 Error started --------------------------------------------------`));
       console.error(e);
-      console.error(`[app] 🔴 ${red(`Error ended --------------------------------------------------`)}`);
+      console.error(red(`[app] 🔴 Error ended --------------------------------------------------`));
     }
   }
 
   static warn(message: string | any) {
     if (typeof message === 'string') {
-      console.warn(`[app] 🟡 ${yellow(message)}`);
+      console.warn(yellow(`[app] 🟡 ${message}`));
     } else {
-      console.warn(`[app] 🟡 ${yellow(`Warning started --------------------------------------------------`)}`);
+      console.warn(yellow(`[app] 🟡 Warning started --------------------------------------------------`));
       console.warn(message);
-      console.warn(`[app] 🟡 ${yellow(`Warning ended --------------------------------------------------`)}`);
+      console.warn(yellow(`[app] 🟡 Warning ended --------------------------------------------------`));
     }
   }
 
   static info(message: string | object) {
     if (typeof message === 'string') {
-      console.info(`[app] 💬 ${blue(message)}`);
+      console.info(blue(`[app] 💬 ${message}`));
     } else {
-      console.info(`[app] 💬 ${blue(`Info started --------------------------------------------------`)}`);
+      console.info(blue(`[app] 💬 Info started --------------------------------------------------`));
       console.info(message);
-      console.info(`[app] 💬 ${blue(`Info ended --------------------------------------------------`)}`);
+      console.info(blue(`[app] 💬 Info ended --------------------------------------------------`));
     }
   }
 }

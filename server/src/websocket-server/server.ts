@@ -4,25 +4,23 @@ import { Logger } from '../utils';
 import { WEBSOCKET_SERVER_KEY } from '../config';
 
 // Creating a new websocket server
-
 const InitializedWebSocketServer = (server: Server) => {
   const wss = new WebSocketServer.Server({
-    server: server
+    server
   });
-  Logger.info('Websocket server is running');
+  Logger.success('Websocket server is running');
   // Creating connection using websocket
-  wss.on('connection', (ws, req) => {
+  wss.on('connection', (socket, req) => {
     let clientId = req.url && req.url.includes('clientId') && req.url.split('clientId=')[1];
     if (!clientId) {
-      ws.close();
+      socket.close();
       throw new Error('Client id is not defined');
     }
-    ws.clientId = clientId;
+    socket.clientId = clientId;
 
-    Logger.log('A new client has connected: ' + clientId);
+    Logger.log(`Client ${clientId} connected`);
     // sending message
-
-    ws.on('message', (data) => {
+    socket.on('message', (data) => {
       //client.send(data)
       const stringData = data.toString();
       console.log('Received message from client: ' + stringData);
@@ -32,6 +30,7 @@ const InitializedWebSocketServer = (server: Server) => {
           wss.clients.forEach((client) => {
             Logger.log('client id: ' + client.clientId);
             if (json.clients == 'ALL') {
+              Logger.log(`Data to client ${client.clientId}`);
               client.send(data);
             } else if (json.clients && json.clients.length > 0 && json.clients.includes(client.clientId)) {
               client.send(data);
@@ -44,11 +43,11 @@ const InitializedWebSocketServer = (server: Server) => {
     });
 
     // handling what to do when clients disconnects from server
-    ws.on('close', () => {
-      Logger.log('Client has disconnected: ' + clientId);
+    socket.on('close', () => {
+      Logger.log(`Client ${clientId} disconnected`);
     });
     // handling client connection error
-    ws.onerror = function (event) {
+    socket.onerror = function (event) {
       Logger.error(event);
     };
   });

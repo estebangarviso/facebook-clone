@@ -1,6 +1,5 @@
-import { createContext, useState, useRef, useMemo } from 'react';
-import { red, yellow, lightBlue, grey } from '@mui/material/colors';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createContext, useState, useRef, useMemo, useEffect } from 'react';
+import ThemeProvider from './ThemeProvider';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Navigate } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
@@ -8,82 +7,120 @@ import { AppConfig } from '../app/config';
 import CountdownModal from '../components/CountdownModal';
 import { AppRoutes } from '../app/routes';
 import AuthService from '../services/AuthService';
+import { useDispatch } from 'react-redux';
 
-// Replicate facebook's color palette
-export const getDesignTokens = (mode) => ({
-  palette: {
-    mode,
-    background: {
-      paper: mode === 'dark' ? '#242526' : '#F5F5F5',
-      default: mode === 'dark' ? '#18191A' : '#F0F2F5',
-      comment: mode === 'dark' ? '#3A3B3C' : '#F0F2F5'
-    },
-    primary: {
-      main: '#2374E1'
-    },
-    secondary: {
-      main: grey[900]
-    },
-    error: {
-      main: red[500]
-    },
-    warning: {
-      main: yellow[500]
-    },
-    success: {
-      main: '#42b72a'
-    },
-    info: {
-      main: lightBlue[500]
-    }
-  }
-});
 const GlobalContext = createContext({
   auth: {
     currentUser: null,
     logout: () => {},
     login: (token) => {}
-  },
-  colorMode: { toggleColorMode: () => {} }
+  }
 });
 
 export default GlobalContext;
 
 export const GlobalProvider = ({ children }) => {
+  const dispatch = useDispatch();
   /** auth - end */
+  const wsRef = useRef();
+  const intervalWsRef = useRef();
+  const connectWs = (clientId) => {
+    if (!clientId || wsRef.current?.readyState === WebSocket.OPEN) return;
+    console.log(`Attempting to connect to websocket with clientId: ${clientId}`);
+    wsRef.current = new WebSocket(`${AppConfig.WS_URL}?clientId=${clientId}`);
+    wsRef.current.addEventListener('open', () => {
+      console.log('Connected to WS');
+    });
+
+    wsRef.current.addEventListener('message', (e) => {
+      e &&
+        e.data &&
+        e.data.text &&
+        e.data
+          .text()
+          .then((data) => {
+            const parsedData = JSON.parse(data);
+            const { type, payload } = parsedData.data;
+            if (type && payload) {
+              dispatch({ type, payload });
+            }
+          })
+          .catch((err) => console.error(err));
+    });
+  };
+  const reconnectWs = (userId) => {
+    intervalWsRef.current = setInterval(() => {
+      // let wsState;
+      // switch (wsRef.current?.readyState) {
+      //   case WebSocket.CONNECTING:
+      //     wsState = 'CONNECTING';
+      //     break;
+      //   case WebSocket.OPEN:
+      //     wsState = 'OPEN';
+      //     break;
+      //   case WebSocket.CLOSING:
+      //     wsState = 'CLOSING';
+      //     break;
+      //   case WebSocket.CLOSED:
+      //     wsState = 'CLOSED';
+      //     break;
+      //   default:
+      //     wsState = 'UNKNOWN';
+      //     break;
+      // }
+      // console.log(`WebSocket reconnecting... current state ${wsState}: ${wsRef.current?.readyState}`, wsRef.current);
+      if (wsRef.current?.readyState !== WebSocket.OPEN) {
+        console.log('Reconnecting to WS...');
+        connectWs(userId);
+      }
+    }, 5000);
+  };
+
   const intervalRef = useRef();
   const [currentUser, setCurrentUser] = useState(
     useMemo(() => {
+      if (!document.cookie.includes('token')) {
+        localStorage.removeItem('token');
+      }
       const token = localStorage.getItem('token');
       if (token) {
         const decodedToken = jwt_decode(token);
+        //connect to websocket
+        connectWs(decodedToken.user._id);
+        reconnectWs(decodedToken.user._id);
         return decodedToken?.user;
       }
       return null;
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   );
   const [showModalTokenIsAboutToExpire, setShowModalTokenIsAboutToExpire] = useState(false);
 
   const logout = () => {
+    wsRef.current?.close();
     localStorage.removeItem('token');
     setCurrentUser(null);
     setShowModalTokenIsAboutToExpire(false);
     clearInterval(intervalRef.current);
+    clearInterval(intervalWsRef.current);
     document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
     // call logout endpoint
     AuthService.logout()
       .then((res) => {
-        console.log('logout res', res);
         return <Navigate to={AppRoutes.LOGIN} />;
       })
       .catch((err) => {
-        console.error('Ops! error on logout', err);
         return <Navigate to={AppRoutes.LOGIN} />;
       });
   };
 
-  const setAuth = (token) => {
+  const login = (token) => {
     const decodedToken = jwt_decode(token);
+    // check if we are connect to websocket
+    if (!wsRef.current) {
+      connectWs(decodedToken.user._id);
+      reconnectWs(decodedToken.user._id);
+    }
     localStorage.setItem('token', token);
     setCurrentUser(decodedToken.user);
     const tokenExp = decodedToken.exp;
@@ -117,7 +154,7 @@ export const GlobalProvider = ({ children }) => {
     if (currentUser) {
       AuthService.refresh()
         .then((res) => {
-          if (res.status === 200) setAuth(res.data.token);
+          if (res.status === 200) login(res.data.token);
           else logout();
         })
         .catch((err) => {
@@ -135,31 +172,18 @@ export const GlobalProvider = ({ children }) => {
   const auth = {
     currentUser,
     logout,
-    setAuth
+    login
   };
   /** auth - end */
-  /** theme - start */
-  // ref: https://mui.com/material-ui/customization/dark-mode/
-  const [mode, setMode] = useState(localStorage.getItem('theme') || 'light');
-  const colorMode = useMemo(
-    () => ({
-      // The dark mode switch would invoke this method
-      toggleColorMode: (save = true) => {
-        setMode((prevMode) => {
-          const newMode = prevMode === 'light' ? 'dark' : 'light';
-          if (save) localStorage.setItem('theme', newMode);
-          return newMode;
-        });
-      }
-    }),
-    []
-  );
-  // Update the theme only if the mode changes
-  const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
-  /** theme - end */
+  useEffect(() => {
+    return () => {
+      clearInterval(intervalRef.current);
+      clearInterval(intervalWsRef.current);
+    };
+  }, []);
   return (
-    <GlobalContext.Provider value={{ auth, colorMode }}>
-      <ThemeProvider theme={theme}>
+    <GlobalContext.Provider value={{ auth }}>
+      <ThemeProvider>
         <CssBaseline />
         {children}
         {showModalTokenIsAboutToExpire ? (
