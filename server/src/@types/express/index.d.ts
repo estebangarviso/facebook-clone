@@ -10,6 +10,10 @@ declare global {
         id: number;
         commentId: number;
       };
+      query?: {
+        pageNumber: number;
+        pageSize: number;
+      };
     }
   }
 }

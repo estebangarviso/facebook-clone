@@ -2,6 +2,7 @@ import { config } from 'dotenv';
 import { Logger } from '../utils';
 import path from 'path';
 config();
+
 export const PUBLIC_DIR = path.join(__dirname, '../../public');
 export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET as string;
 export const ACCESS_TOKEN_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN as string;
@@ -13,6 +14,7 @@ export const SKIP_VALIDATION = process.env.SKIP_VALIDATION === 'true';
 export const SALT_WORK_FACTOR = Number(process.env.SALT_WORK_FACTOR);
 export const WEBSOCKET_SERVER_URL = process.env.WEBSOCKET_SERVER_URL as string;
 export const WEBSOCKET_SERVER_KEY = process.env.WEBSOCKET_SERVER_KEY as string;
+export const PAGE_SIZES = JSON.parse(process.env.PAGE_SIZES as string) as { [key: string]: number };
 
 export default {
   verify: function () {
@@ -45,6 +47,12 @@ export default {
     }
     if (!WEBSOCKET_SERVER_KEY) {
       throw new Error('WEBSOCKET_SERVER_KEY is not defined');
+    }
+    if (PAGE_SIZES === undefined) {
+      if (Object.keys(PAGE_SIZES).length === 0) {
+        throw new Error('PAGE_SIZES does not have any value');
+      }
+      throw new Error('PAGE_SIZES is not defined');
     }
     Logger.success(`Environment variables are set correctly`);
   }

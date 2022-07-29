@@ -5,9 +5,7 @@ import { FormHelperText, Dialog, Alert } from '@mui/material';
 import { useValidationResolver } from './../../custom-hook/useValidationResolver';
 import { styled } from '@mui/material/styles';
 
-const StyledForm = styled('form')`
-  width: 100%;
-`;
+const StyledForm = styled('form')``;
 
 const Form = ({
   children,

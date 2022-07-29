@@ -1,6 +1,6 @@
 import axios, { handleError, handleSuccess } from '../utils/axios';
 
-const ENDPOINT = '/user';
+const ENDPOINT = '/users';
 
 async function login(formData) {
   try {

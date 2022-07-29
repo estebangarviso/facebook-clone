@@ -11,7 +11,6 @@ import commentsReducer from './commentsSlice';
 import themeReducer from './themeSlice';
 
 // Middleware you want to use by NODE_ENV:
-console.log('process.env.NODE_ENV', process.env.NODE_ENV);
 const middlewares = [];
 if (process.env.NODE_ENV === 'development') {
   middlewares.push(logger);

@@ -2,12 +2,24 @@ import { Post, Comment } from '../models';
 import { UploadedFile } from 'express-fileupload';
 import { Request, Response } from 'express';
 import { Logger } from '../utils';
-import { PUBLIC_DIR } from '../config';
+import { PUBLIC_DIR, PAGE_SIZES } from '../config';
 import sendWebSocketMessage from '../websocket-server/client';
 
 const getAllPosts = async (req: Request, res: Response) => {
-  const posts = await Post.find({}).populate('user', 'avatar name');
-  return res.status(200).json(posts);
+  const pageNumber = Number(req.query.pageNumber) || 0;
+  const pageSize = Number(req.query.pageSize) || PAGE_SIZES.posts;
+  const posts = await Post.find({})
+    // if we sort with -1 it will sort in descending order and if we sort with 1 it will sort in ascending order
+    .sort({ createdAt: -1 }) // !TODO: Bussiness logic with updatedAt
+    .skip(pageNumber * pageSize)
+    .limit(pageSize)
+    .populate('user', 'avatar name');
+  return res.status(200).json({
+    posts,
+    pageNumber,
+    pageSize,
+    hasMore: posts.length === pageSize
+  });
 };
 
 const createPost = async (req: Request, res: Response) => {
